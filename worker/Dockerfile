@@ -1,6 +1,6 @@
 FROM tensorflow/tensorflow:1.13.1-py3
 
-RUN pip install keras
+RUN pip install keras falcon gunicorn
 
 ENV PYTHONUNBUFFERED=1
 
