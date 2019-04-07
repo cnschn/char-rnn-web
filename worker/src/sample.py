@@ -1,5 +1,6 @@
 import argparse
 import json
+from pathlib import Path
 import os
 
 import numpy as np
@@ -10,6 +11,15 @@ from model import build_model, load_weights
 
 DATA_DIR = './data'
 MODEL_DIR = './model'
+
+def latest_epoch():
+    model_dir = Path(MODEL_DIR)
+    checkpoints = list(model_dir.glob('weights.*.h5'))
+    if not checkpoints:
+        raise ValueError("No checkpoints found to resume from")
+    
+    resume_epoch = max(int(p.name.split('.')[1]) for p in checkpoints)
+    return resume_epoch
 
 def build_sample_model(vocab_size):
     model = Sequential()
@@ -52,9 +62,12 @@ def sample(epoch, header, num_chars):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Sample some text from the trained model.')
-    parser.add_argument('epoch', type=int, help='epoch checkpoint to sample from')
+    parser.add_argument('epoch', type=int, nargs='?', help='epoch checkpoint to sample from, default: latest')
     parser.add_argument('--seed', default='', help='initial seed for the generated text')
     parser.add_argument('--len', type=int, default=512, help='number of characters to sample (default 512)')
     args = parser.parse_args()
+
+    if args.epoch is None:
+        args.epoch = latest_epoch()
 
     print(sample(args.epoch, args.seed, args.len))
