@@ -42,6 +42,7 @@ class SamplerResource:
             sample = np.random.choice(list(range(self.vocab_size)), p=result)
             sampled.append(sample)
 
+        resp.content_type = falcon.MEDIA_TEXT
         resp.body = ''.join(self.idx_to_char[c] for c in sampled)
 
 epoch = latest_epoch()
